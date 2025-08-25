@@ -1,0 +1,77 @@
+﻿@using InventoryManagement.Domain.Entities
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<InventoryManagement.Domain.Entities.AppUser> SignInManager
+@inject UserManager<InventoryManagement.Domain.Entities.AppUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Inventory Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/30.2.6/fluent.css" />
+    <script src="https://cdn.syncfusion.com/ej2/30.2.6/dist/ej2.min.js"></script>
+</head>
+<body class="app-body">
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color:#1D4C21">
+        <div class="container-fluid">
+            <a class="navbar-brand text-light" asp-controller="Home" asp-action="Index">Inventory</a>
+
+            <div class="collapse navbar-collapse">
+                <form class="d-flex me-auto" method="get" asp-controller="Home" asp-action="Index">
+                    <input class="form-control me-2" style="width:230px" name="query" placeholder="Search inventories or items..." value="@Context.Request.Query["query"]" />
+                    <button class="btn btn-outline-success text-light" type="submit">Search</button>
+                </form>
+
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        var user = await UserManager.GetUserAsync(User);
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item"><a class="nav-link text-light" asp-controller="Admin" asp-action="Index">@user.DisplayName</a></li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link text-light" asp-controller="User" asp-action="Details">@user.DisplayName</a></li>
+                        }
+                        <li class="nav-item"><form method="post" asp-controller="Account" asp-action="Logout"><button class="btn btn-link nav-link text-light">Logout</button></form></li>
+                        }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link text-light" asp-controller="Account" asp-action="Login">Login</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" asp-controller="Account" asp-action="Register">Register</a></li>
+                    }
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown" href="#">Theme</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('light')">Light</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="setTheme('dark')">Dark</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-3">
+        @RenderBody()
+    </div>
+
+    <!-- Context toolbar (hidden until selection) -->
+    <div id="contextToolbar" class="context-toolbar d-none">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div id="contextToolbarButtons" class="d-flex gap-2 align-items-center"></div>
+            <div class="text-muted small">Selected: <span id="contextCount">0</span></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <ejs-scripts></ejs-scripts>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

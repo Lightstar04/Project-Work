@@ -1,0 +1,53 @@
+﻿@using InventoryManagement.Domain.Entities
+@using Microsoft.AspNetCore.Identity
+@model List<InventoryManagement.Domain.Entities.AppUser>
+@inject UserManager<AppUser> UserManager
+
+@{
+    ViewData["Title"] = "Admin - Users";
+}
+<h2 class="mt-3" >Users List</h2>
+
+<form method="post" asp-action="Action">
+    <div class="toolbar column-gap-5 mt-3">
+        <button name="operation" value="block" class="btn btn-outline-danger">Block</button>
+        <button name="operation" value="unblock" title="Unblock" class="btn btn-outline-success">🔓</button>
+        <button name="operation" value="delete" title="Delete" class="btn btn-outline-warning">🗑</button>
+        <button name="operation" value="remove" title="Remove" class="btn btn-danger" style="margin-left:850px">Remove Admin</button>
+        <button name="operation" value="grant" title="Grant" class="btn btn-primary">Grant Admin</button>
+    </div>
+
+    <table class="table table-striped-columns mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th onclick="toggle(this)">#</th>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Is Admin</th>
+                <th>Blocked</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                var isAdmin = (await UserManager.IsInRoleAsync(user, "Admin"));
+                <tr>
+                    <td><input type="checkbox" name="selected" value="@user.Id" /></td>
+                    <td>@user.Email</td>
+                    <td>@user.DisplayName</td>
+                    <td>@(isAdmin ? "Yes" : "No")</td>
+                    <td>@(user.IsBlocked ? "Yes" : "No")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+
+<script>
+    function toggle(source){
+        checkboxes = document.getElementByName('selected');
+        for(var i = 0; i < checkboxes.length; i++){
+            checkboxes[i].checked = source.checked;
+        }
+    }
+</script>

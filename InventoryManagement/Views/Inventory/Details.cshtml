@@ -1,0 +1,165 @@
+﻿@using System.Net
+@using System.Security.Claims
+@using InventoryManagement.Services.Classes
+@model InventoryManagement.ViewModels.InventoryDetailsViewModel
+@inject CustomIdService CustomIdService
+
+@{
+    ViewData["Title"] = Model.Inventory.Title;
+}
+<div class="d-flex justify-content-between align-items-start">
+    <div>
+        <h2>@Model.Inventory.Title</h2>
+        <p class="text-info">@Model.Inventory.Description</p>
+    </div>
+    <div class="text-end">
+        <small>Creator: @Model.Inventory.OwnerId</small><br />
+        <small>Category: @Model.Inventory.Category</small>
+        @foreach(var tag in Model.Inventory.Tags)
+        {
+            <small>Tags: @tag</small>
+        }
+    </div>
+</div>
+
+<ul class="nav nav-tabs mt-3" id="invTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="items-tab" data-bs-toggle="tab" data-bs-target="#items" type="button" role="tab">Items</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="discussion-tab" data-bs-toggle="tab" data-bs-target="#discussion" type="button" role="tab">Discussion</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">Settings</button>
+    </li>
+</ul>
+
+<div class="tab-content mt-3">
+    <div class="tab-pane fade show active" id="items" role="tabpanel">
+        <div class="d-flex justify-content-between mb-2">
+            <div>
+                <a class="btn btn-success" asp-controller="Item" asp-action="Create" asp-route-inventoryId="@Model.Inventory.Id">Add item</a>
+            </div>
+            <div>
+                <input class="form-control" id="itemsFilter" placeholder="Filter items (client-side)" />
+            </div>
+        </div>
+
+        <table class="table" id="itemsTable">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width:40px;"></th>
+                    <th>Custom ID</th>
+                    @foreach (var f in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
+                    {
+                        <th>@f.Title</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    <tr class="table-row" data-id="@item.Id" onclick="toggleSelect(this, '@item.Id')">
+                        <td><input type="checkbox" /></td>
+                        <td>@item.CustomId</td>
+                        @foreach (var field in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
+                        {
+                            var val = item.FieldValues.FirstOrDefault(v => v.InventoryFieldId == field.Id)?.Value ?? "";
+                            <td>@val</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="tab-pane fade" id="discussion" role="tabpanel">
+        <div id="posts">
+            @foreach (var p in Model.Posts)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <div>@Html.Raw(WebUtility.HtmlEncode(p.Markdown).Replace("\n", "<br/>"))</div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        @if (User.Identity?.IsAuthenticated ?? false)
+        {
+            <form method="post" asp-controller="Inventory" asp-action="PostComment">
+                <input type="hidden" name="id" value="@Model.Inventory.Id" />
+                <textarea name="message" class="form-control" rows="3" required></textarea>
+                <button class="btn btn-primary mt-2">Post</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info">Log in to post comments.</div>
+        }
+    </div>
+
+    <div class="tab-pane fade" id="settings" role="tabpanel">
+        @{
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            bool canEdit = userId != null && (Model.Inventory.OwnerId == userId || User.IsInRole("Admin"));
+        }
+        @if (canEdit)
+        {
+            <form id="settingsForm" method="post" asp-controller="Inventory" asp-action="SaveSettings">
+                <input type="hidden" name="id" value="@Model.Inventory.Id" />
+                <div class="mb-3">
+                    <label class="form-label">Title</label>
+                    <input name="title" class="form-control" value="@Model.Inventory.Title" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description (Markdown)</label>
+                    <textarea name="description" class="form-control" rows="4">@Model.Inventory.Description</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Custom ID Template (JSON)</label>
+                    <textarea id="cid" name="customIdTemplateJson" class="form-control" rows="4">@Model.Inventory.CustomIdTemplateJson</textarea>
+                    <div class="form-text">Preview: <span id="cidPreview">@CustomIdService.RenderPreview(Model.Inventory.CustomIdTemplateJson ?? "[]")</span></div>
+                </div>
+                <input type="hidden" name="rowVersionBase64" value="@(Model.Inventory.Version != null ? Convert.ToBase64String(Model.Inventory.Version) : "")" />
+                <button class="btn btn-primary" type="submit">Save</button>
+            </form>
+
+            <script>
+                (function(){
+                    const form = document.getElementById('settingsForm');
+                    let last = form ? form.innerHTML : '';
+                    setInterval(()=>{
+                        if (!form) return;
+                        if (form.innerHTML !== last) {
+                            last = form.innerHTML;
+                            const fd = new FormData(form);
+                            fetch(form.action, { method: 'POST', body: fd }).then(res=> {
+                                document.getElementById('cidPreview').innerText = document.getElementById('cid').value.slice(0,200);
+                            });
+                        }
+                    }, 8000);
+                })();
+            </script>
+        }
+        else
+        {
+            <div class="alert alert-info">Only owner or admin can edit inventory settings.</div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const conn = new signalR.HubConnectionBuilder().withUrl("/hubs/inventory").build();
+        conn.start().then(() => {
+            conn.invoke("JoinInventory", "@Model.Inventory.Id");
+            conn.on("ReceivePost", function(post) {
+                const div = document.createElement('div');
+                div.className = 'card mb-2';
+                div.innerHTML = `<div class="card-body"><div class="small text-muted">${post.author}</div><div>${post.markdown}</div></div>`;
+                document.getElementById('posts').appendChild(div);
+            });
+        }).catch(err => console.error(err));
+    </script>
+}

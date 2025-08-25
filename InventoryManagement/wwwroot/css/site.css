@@ -1,0 +1,60 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+.app-body {
+    padding-bottom: 90px;
+}
+
+.context-toolbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(25, 25, 25, 0.95);
+    color: white;
+    padding: 8px 12px;
+    transition: transform 200ms ease;
+    z-index: 1050;
+}
+
+    .context-toolbar.d-none {
+        transform: translateY(120%);
+    }
+
+.table-row.selected {
+    background: rgba(0, 123, 255, 0.08);
+}
+
+.dark-theme {
+    background: #121212;
+    color: #eee;
+}

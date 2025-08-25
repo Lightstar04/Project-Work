@@ -1,0 +1,37 @@
+﻿@using InventoryManagement.Domain.Enums
+@model InventoryManagement.ViewModels.CreateItemViewModel
+@{
+    ViewData["Title"] = "Create item";
+}
+<h2>Add item to @Model.Inventory.Title</h2>
+
+<form method="post" asp-controller="Item" asp-action="CreatePost">
+    <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
+    @foreach (var f in Model.Inventory.Fields.OrderBy(f => f.Order))
+    {
+        <div class="mb-3">
+            <label class="form-label">@f.Title</label>
+            @if (f.FieldType == InventoryFieldType.SingleLine)
+            {
+                <input class="form-control" name="field_@f.Id" />
+            }
+            else if (f.FieldType == InventoryFieldType.MultiLine)
+            {
+                <textarea class="form-control" name="field_@f.Id"></textarea>
+            }
+            else if (f.FieldType == InventoryFieldType.Number)
+            {
+                <input type="number" class="form-control" name="field_@f.Id" />
+            }
+            else if (f.FieldType == InventoryFieldType.DocLink)
+            {
+                <input type="checkbox" class="form-check-input" name="field_@f.Id" />
+            }
+            else
+            {
+                <input class="form-control" name="field_@f.Id" />
+            }
+        </div>
+    }
+    <button class="btn btn-success">Add item</button>
+</form>

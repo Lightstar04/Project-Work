@@ -1,0 +1,103 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model InventoryManagement.ViewModels.HomeViewModel
+@inject SignInManager<InventoryManagement.Domain.Entities.AppUser> SignInManager
+@inject UserManager<InventoryManagement.Domain.Entities.AppUser> UserManager
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <form class="row justify-content-end mt-4 me-3" asp-action="Create" asp-controller="Inventory" method="get">
+        <button type="submit" class="btn btn-success row justify-content-end" style="width:100px">Create</button>
+    </form>
+
+    <h2 class="row justify-content-center mt-2">Latest inventories</h2>
+
+    <table class="table table-striped table-bordered mt-3">
+        <thead class="table-primary">
+            <tr>
+                <th class="ps-3">Title</th>
+                <th>Category</th>
+                <th>Creator</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var inventory in Model.Inventories)
+            {
+                <tr>
+                    <td class="ps-3"><a asp-controller="Inventory" asp-action="Details" asp-route-id="@inventory.Id">@inventory.Title</a></td>
+                    <td>@inventory.Category</td>
+                    <td>@inventory.Owner?.DisplayName</td>
+                    <td>@(inventory.Items?.Count ?? 0)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3 class="row mt-5 justify-content-center">Top 5 popular</h3>
+    <table class="table table-hover table-bordered mt-3">
+        <thead class="table-primary">
+            <tr>
+                <th class="ps-3">Title</th>
+                <th class="ps-3">Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var top in Model.Top)
+            {
+                <tr>
+                    <td class="w-50 ps-3"><a asp-controller="Inventory" asp-action="Details" asp-route-id="@top.Id">@top.Title</a></td>
+                    <td class="ps-3">@(top.Items?.Count ?? 0) items</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h2 class="row justify-content-center mt-2">Latest inventories</h2>
+
+    <table class="table table-striped table-bordered mt-3">
+        <thead class="table-primary">
+            <tr>
+                <th class="ps-3">Title</th>
+                <th>Category</th>
+                <th>Creator</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var inventory in Model.Inventories)
+            {
+                <tr>
+                    <td class="ps-3"><a asp-controller="Inventory" asp-action="Details" asp-route-id="@inventory.Id">@inventory.Title</a></td>
+                    <td>@inventory.Category</td>
+                    <td>@inventory.Owner?.DisplayName</td>
+                    <td>@(inventory.Items?.Count ?? 0)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3 class="row mt-5 justify-content-center">Top 5 popular</h3>
+    <table class="table table-hover table-bordered mt-3">
+        <thead class="table-primary">
+            <tr>
+                <th class="ps-3">Title</th>
+                <th class="ps-3">Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var top in Model.Top)
+            {
+                <tr>
+                    <td class="w-50 ps-3"><a asp-controller="Inventory" asp-action="Details" asp-route-id="@top.Id">@top.Title</a></td>
+                    <td class="ps-3">@(top.Items?.Count ?? 0) items</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

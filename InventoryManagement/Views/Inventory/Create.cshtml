@@ -1,0 +1,83 @@
+﻿@using InventoryManagement.Domain.Enums
+@model InventoryManagement.Domain.Entities.Inventory
+@{
+    ViewData["Title"] = "Create inventory";
+}
+
+<form method="post" asp-controller="Inventory" asp-action="Create" class="mt-5 justify-content-center">
+    <div class="mb-3 w-25">
+        <label class="form-label">Title</label>
+        <input name="Title" class="form-control" required />
+    </div>
+
+    <div class="mb-3 w-25">
+        <label class="form-label">Category</label>
+        <select name="Category" class="form-select">
+            <option value="Equipment">Equipment</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Book">Book</option>
+            <option value="Other">Other</option>
+        </select>
+    </div>
+    
+    <div class="mb-3 w-25">
+        <label class="form-label">Custom Id</label>
+        <select id="customIdTemplate" class="form-select" name="CustomIdTemplateJson">
+            <option value='[{"Type":0,"Parameter":"INV-"}]'>Fixed prefix "INV-"</option>
+            <option value='[{"Type":1}]'>Random 20-bit number</option>
+            <option value='[{"Type":2}]'>Random 32-bit number</option>
+            <option value='[{"Type":3}]'>Random 6-digit number</option>
+            <option value='[{"Type":4}]'>Sequence</option>
+        </select>
+        <div class="form-text">
+            Choose how IDs for items will be generated.
+        </div>
+    </div>
+
+    @for(int i = 0; i < Model.Tags.Count; i++)
+    {
+        <div class="form-group">
+            <label asp-for="Tags[i].Text" class="form-label">Tag</label>
+            <input asp-for="Tags[i].Text" class="form-control"/>
+        </div>
+    }
+
+    @for(int i = 0; i < Model.Fields.Count; i++)
+    {
+        <div class="form-group">
+            <label asp-for="Fields[i].Title" class="form-label">Field title</label>
+            <input asp-for="Fields[i].Title" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label asp-for="Fields[i].Description" class="form-label">Field Description</label>
+            <input asp-for="Fields[i].Description" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Fields[i].Order" class="form-label">Field Order</label>
+            <input asp-for="Fields[i].Order" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label asp-for="Fields[i].FieldType" class="form-label">Field type</label>
+            <select asp-for="Fields[i].FieldType" asp-items="Html.GetEnumSelectList<InventoryFieldType>()" class="form-control">
+                <option value="">Please select</option>
+            </select>
+            <span asp-validation-for="Fields[i].FieldType" class="text-danger"></span>
+        </div>
+        <div>
+            <label asp-for="Fields[i].ShowInTable" class="form-label">Show In Table</label>
+            <input type="checkbox" asp-for="Fields[i].ShowInTable" />
+        </div>
+    }
+
+    <div class="mb-3 w-50">
+        <label class="form-label">Description</label>
+        <textarea name="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Public (allow authenticated users to add items)</label>
+        <input type="checkbox" name="IsPublic" />
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+</form>
