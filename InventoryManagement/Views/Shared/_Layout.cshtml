@@ -19,7 +19,12 @@
         <div class="container-fluid">
             <a class="navbar-brand text-light" asp-controller="Home" asp-action="Index">Home</a>
 
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                    aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
                 <form class="d-flex me-auto" method="get" asp-controller="Home" asp-action="Index">
                     <input class="form-control me-2" style="width:230px" name="query" placeholder="Search inventories or items..." value="@Context.Request.Query["query"]" />
                     <button class="btn btn-outline-success text-light" type="submit">Search</button>
