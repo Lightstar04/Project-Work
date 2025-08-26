@@ -35,6 +35,9 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="customId-tab" data-bs-toggle="tab" data-bs-target="#customId" type="button" role="tab">Custom ID</button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="statistics-tab" data-bs-toggle="tab" data-bs-target="#statistics" type="button" role="tab">Stats</button>
+    </li>
 </ul>
 
 <div class="tab-content mt-3">
@@ -171,6 +174,22 @@
         {
             <div class="alert alert-info">Only owner or admin can edit inventory settings.</div>
         }
+    </div>
+
+    <div class="tab-pane fade" id="statistics" role="tabpanel">
+        <ejs-chart id="dailyStatsChart" width="60%">
+            <e-chart-primaryxaxis valueType="Category" title="Field"></e-chart-primaryxaxis>
+            <e-chart-primaryyaxis title="Usage Count"></e-chart-primaryyaxis>
+            <e-series-collection>
+                <e-series 
+                    dataSource="@ViewBag.dataSource" 
+                    xName="FieldTitle"
+                    yName="Count"
+                    type="@Syncfusion.EJ2.Charts.ChartSeriesType.Column"
+                    marker="@(new Syncfusion.EJ2.Charts.ChartMarkerSettings{DataLabel = new Syncfusion.EJ2.Charts.ChartDataLabelSettings{Visible = true}})">
+                </e-series>
+            </e-series-collection>
+        </ejs-chart>
     </div>
 </div>
 

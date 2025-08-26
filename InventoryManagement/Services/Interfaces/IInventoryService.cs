@@ -21,5 +21,7 @@ namespace InventoryManagement.Services.Interfaces
         Task SaveAsync(int id, string customIdTemplateJson, string rowVersionBase64);
         
         Task PostAsync(Post post, int id);
+        
+        Task<List<FieldUsageStat>> GetMostUsedFieldDailyAsync(int inventoryId, DateTime date);
     }
 }

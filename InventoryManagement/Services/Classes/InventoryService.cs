@@ -28,8 +28,16 @@ namespace InventoryManagement.Services.Classes
                 .Where(i => i.InventoryId == id)
                 .ToListAsync();
 
-            var posts = await _context.Posts.Where(p => p.InventoryId == id).ToListAsync();
-            var viewModel = new InventoryDetailsViewModel{ Inventory = inventory, Items = items, Posts = posts };
+            var posts = await _context.Posts
+                .Where(p => p.InventoryId == id)
+                .ToListAsync();
+            
+            var viewModel = new InventoryDetailsViewModel
+            { 
+                Inventory = inventory,
+                Items = items, 
+                Posts = posts 
+            };
 
             return viewModel;
         }
@@ -134,6 +142,27 @@ namespace InventoryManagement.Services.Classes
             await _context.SaveChangesAsync();
             
             await _notificationService.NotifyPostAsync(id, new { author = post.AuthorId, markdown = post.Markdown });
+        }
+
+        public async Task<List<FieldUsageStat>> GetMostUsedFieldDailyAsync(int inventoryId, DateTime date)
+        {
+            var start = date.Date;
+            var end = start.AddDays(1);
+
+            var result = await _context.ItemFieldValues
+                .Where(v => v.Item.InventoryId == inventoryId
+                       && v.Item.CreatedAt >= start
+                       && v.Item.CreatedAt < end)
+                .GroupBy(v => v.InventoryField.Title)
+                .Select(g => new FieldUsageStat
+                {
+                    FieldTitle = g.Key,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .ToListAsync();
+
+            return result;
         }
 
     }

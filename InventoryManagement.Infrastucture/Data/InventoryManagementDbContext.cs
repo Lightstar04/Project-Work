@@ -16,6 +16,7 @@ namespace InventoryManagement.Infrastucture.Data
         public DbSet<ItemFieldValue> ItemFieldValues { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<FieldUsageStat> FieldUsageStat { get; set; }
 
         public InventoryManagementDbContext(DbContextOptions<InventoryManagementDbContext> opts)
             : base(opts)
@@ -89,7 +90,7 @@ namespace InventoryManagement.Infrastucture.Data
                 .HasOne(v => v.Item)
                 .WithMany(i => i.FieldValues)
                 .HasForeignKey(v => v.ItemId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Post>()
                 .ToTable("Posts");
@@ -99,6 +100,11 @@ namespace InventoryManagement.Infrastucture.Data
             builder.Entity<Tag>()
                 .ToTable("Tags");
             builder.Entity<Tag>()
+                .HasKey(x => x.Id);
+
+            builder.Entity<FieldUsageStat>()
+                .ToTable("FieldStat");
+            builder.Entity<FieldUsageStat>()
                 .HasKey(x => x.Id);
 
             base.OnModelCreating(builder);

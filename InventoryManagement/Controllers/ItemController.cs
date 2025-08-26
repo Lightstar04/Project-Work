@@ -26,7 +26,7 @@ namespace InventoryManagement.Controllers
         {
             var inventory = _context.Inventories.Include(i => i.Fields).FirstOrDefault(i => i.Id ==  inventoryId);
 
-            if(inventory != null && inventory.IsPublic == true || User.IsInRole("Admin"))
+            if(inventory != null && inventory.IsPublic == true || User.IsInRole("Admin") || inventory.OwnerId == User.FindFirst(ClaimTypes.NameIdentifier)!.Value)
             {
                 var viewModel = new CreateItemViewModel{ Inventory = inventory };
                 return View(viewModel);

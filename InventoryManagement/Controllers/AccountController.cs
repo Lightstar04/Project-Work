@@ -46,7 +46,7 @@ namespace InventoryManagement.Controllers
 
             foreach(var error in response.Errors)
             {
-                ModelState.AddModelError("", error.Description);
+                ViewData["ErrorMessage"] = $"Username {user.UserName} is already taken";
             }
 
             return View(viewModel);
@@ -74,8 +74,8 @@ namespace InventoryManagement.Controllers
             {
                 return Redirect(model.ReturnUrl ?? "/");
             }
-            
-            ModelState.AddModelError("", "Invalid login attempt");
+
+            ViewData["ErrorMessage"] = $"Invalid login attempt";
             
             return View(model);
         }

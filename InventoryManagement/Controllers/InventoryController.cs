@@ -22,6 +22,9 @@ namespace InventoryManagement.Controllers
         {
             var result = await _service.GetByIdAsync(id);
 
+            var chartData = await _service.GetMostUsedFieldDailyAsync(id, DateTime.Now);
+            ViewBag.dataSource = chartData;
+
             return View(result);
         }
 
