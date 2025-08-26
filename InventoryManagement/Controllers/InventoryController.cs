@@ -61,8 +61,7 @@ namespace InventoryManagement.Controllers
             int id, 
             string title,
             string description, 
-            string rowVersionBase64,
-            string customIdTemplateJson) 
+            string rowVersionBase64) 
         {
             var inventory = await _context.Inventories.FindAsync(id);
 
@@ -77,7 +76,14 @@ namespace InventoryManagement.Controllers
                 return Forbid();
             }
 
-            var result = _service.SaveAsync(id, title, description, customIdTemplateJson, rowVersionBase64);
+            var result = _service.SaveAsync(id, title, description, rowVersionBase64);
+
+            return RedirectToAction("Details", new { id });
+        }
+
+        public async Task<IActionResult> SaveSettings(int id, string customIdTemplateJson, string rowVersionBase64)
+        {
+            var result = _service.SaveAsync(id, customIdTemplateJson, rowVersionBase64);
 
             return RedirectToAction("Details", new { id });
         }

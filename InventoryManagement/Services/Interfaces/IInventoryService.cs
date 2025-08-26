@@ -16,7 +16,9 @@ namespace InventoryManagement.Services.Interfaces
         
         Task<int> SearchAsync(string query);
 
-        Task SaveAsync(int id, string title, string description, string customIdTemplateJson, string rowVersionBase64);
+        Task SaveAsync(int id, string title, string description, string rowVersionBase64);
+        
+        Task SaveAsync(int id, string customIdTemplateJson, string rowVersionBase64);
         
         Task PostAsync(Post post, int id);
     }

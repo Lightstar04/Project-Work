@@ -2,6 +2,7 @@
 using InventoryManagement.Infrastucture.Data;
 using InventoryManagement.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace InventoryManagement.Services.Classes
 {
@@ -58,25 +59,40 @@ namespace InventoryManagement.Services.Classes
             return result;
         }
 
-        public async Task UpdateAsync(Item item, byte[]? version)
-        {
-            if (version != null) 
+        public async Task UpdateAsync(int id)
+        {            
+            var entity = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
+
+            if(entity != null)
             {
-                item.Version = version;
+                _context.Items.Update(entity);
+                await _context.SaveChangesAsync();
             }
-            
-            _context.Items.Update(item);
-            await _context.SaveChangesAsync();
+
         }
 
-        public async Task RemoveAsync(int inventoryId, int id)
+        public async Task RemoveAsync(int id)
         {
-            var entity = await GetAsync(inventoryId, id);
+            var entity = await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
 
             if(entity != null)
             {
                 _context.Remove(entity);
                 await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task ButtonOperationAsync(string[] selected, string operation)
+        {
+            var ids = selected.ToList();
+            var items = await _context.Items.Where(i => ids.Contains(i.Id.ToString())).ToListAsync();
+
+            foreach (var item in items)
+            {
+                if (operation == "edit")
+                    await UpdateAsync(item.Id);
+                else if (operation == "delete")
+                    await RemoveAsync(item.Id);
             }
         }
     }

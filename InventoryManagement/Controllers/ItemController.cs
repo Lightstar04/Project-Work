@@ -26,7 +26,7 @@ namespace InventoryManagement.Controllers
         {
             var inventory = _context.Inventories.Include(i => i.Fields).FirstOrDefault(i => i.Id ==  inventoryId);
 
-            if(inventory != null)
+            if(inventory != null && inventory.IsPublic == true || User.IsInRole("Admin"))
             {
                 var viewModel = new CreateItemViewModel{ Inventory = inventory };
                 return View(viewModel);
@@ -65,6 +65,14 @@ namespace InventoryManagement.Controllers
 
             return NotFound();
 
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Action(string[] selected, string operation)
+        {
+            await _itemService.ButtonOperationAsync(selected, operation);
+
+            return RedirectToAction("Details", "Inventory");
         }
 
     }

@@ -32,6 +32,9 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab">Settings</button>
     </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="customId-tab" data-bs-toggle="tab" data-bs-target="#customId" type="button" role="tab">Custom ID</button>
+    </li>
 </ul>
 
 <div class="tab-content mt-3">
@@ -45,32 +48,39 @@
             </div>
         </div>
 
-        <table class="table" id="itemsTable">
-            <thead class="table-dark">
-                <tr>
-                    <th style="width:40px;"></th>
-                    <th>Custom ID</th>
-                    @foreach (var f in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
-                    {
-                        <th>@f.Title</th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.Items)
-                {
-                    <tr class="table-row" data-id="@item.Id" onclick="toggleSelect(this, '@item.Id')">
-                        <td><input type="checkbox" /></td>
-                        <td>@item.CustomId</td>
-                        @foreach (var field in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
+        <form method="post" asp-action="Action">
+            <div class="toolbar column-gap-5 mt-3 mb-3" style="margin-left:1190px">
+                <button name="operation" value="edit" title="Edit" class="btn btn-outline-warning">✏️</button>
+                <button name="operation" value="delete" title="Delete" class="btn btn-outline-danger">🗑</button>
+            </div>
+
+            <table class="table" id="itemsTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width:40px;" onclick="toggle(this)"></th>
+                        <th>Custom ID</th>
+                        @foreach (var f in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
                         {
-                            var val = item.FieldValues.FirstOrDefault(v => v.InventoryFieldId == field.Id)?.Value ?? "";
-                            <td>@val</td>
+                            <th>@f.Title</th>
                         }
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td><input type="checkbox" name="selected" value="@item.Id" /></td>
+                            <td>@item.CustomId</td>
+                            @foreach (var field in Model.Inventory.Fields.Where(f => f.ShowInTable).OrderBy(f => f.Order))
+                            {
+                                var value = item.FieldValues.FirstOrDefault(v => v.InventoryFieldId == field.Id)?.Value ?? "";
+                                <td>@value</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </form>
     </div>
 
     <div class="tab-pane fade" id="discussion" role="tabpanel">
@@ -116,11 +126,6 @@
                     <label class="form-label">Description (Markdown)</label>
                     <textarea name="description" class="form-control" rows="4">@Model.Inventory.Description</textarea>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Custom ID Template (JSON)</label>
-                    <textarea id="cid" name="customIdTemplateJson" class="form-control" rows="4">@Model.Inventory.CustomIdTemplateJson</textarea>
-                    <div class="form-text">Preview: <span id="cidPreview">@CustomIdService.RenderPreview(Model.Inventory.CustomIdTemplateJson ?? "[]")</span></div>
-                </div>
                 <input type="hidden" name="rowVersionBase64" value="@(Model.Inventory.Version != null ? Convert.ToBase64String(Model.Inventory.Version) : "")" />
                 <button class="btn btn-primary" type="submit">Save</button>
             </form>
@@ -147,6 +152,26 @@
             <div class="alert alert-info">Only owner or admin can edit inventory settings.</div>
         }
     </div>
+    
+    <div class="tab-pane fade" id="customId" role="tabpanel">
+        @if (canEdit)
+        {
+            <form id="customIdsForm" method="post" asp-controller="Inventory" asp-action="SaveSettings">
+                <input type="hidden" name="id" value="@Model.Inventory.Id" />
+                <div class="mb-3">
+                    <label class="form-label">Custom ID Template (JSON)</label>
+                    <textarea id="cid" name="customIdTemplateJson" class="form-control" rows="4">@Model.Inventory.CustomIdTemplateJson</textarea>
+                    <div class="form-text">Preview: <span id="cidPreview">@CustomIdService.RenderPreview(Model.Inventory.CustomIdTemplateJson ?? "[]")</span></div>
+                </div>
+                <input type="hidden" name="rowVersionBase64" value="@(Model.Inventory.Version != null ? Convert.ToBase64String(Model.Inventory.Version) : "")" />
+                <button class="btn btn-primary" type="submit">Save</button>
+            </form>
+        }
+        else
+        {
+            <div class="alert alert-info">Only owner or admin can edit inventory settings.</div>
+        }
+    </div>
 </div>
 
 @section Scripts {
@@ -161,5 +186,14 @@
                 document.getElementById('posts').appendChild(div);
             });
         }).catch(err => console.error(err));
+    </script>
+
+    <script>
+        function toggle(this){
+            checkboxes = document.getElementByName('selected');
+            for(var i = 0; i < checkboxes.length; i++){
+                checkboxes[i].checked = source.checked;
+            }
+        }
     </script>
 }

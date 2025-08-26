@@ -4,15 +4,15 @@
     ViewData["Title"] = "Create inventory";
 }
 
-<form method="post" asp-controller="Inventory" asp-action="Create" class="mt-5 justify-content-center">
-    <div class="mb-3 w-25">
-        <label class="form-label">Title</label>
-        <input name="Title" class="form-control" required />
+<h1 class="row justify-content-center mt-5">Create Inventory</h1>
+
+<form method="post" asp-controller="Inventory" asp-action="Create" style="margin-top:70px">
+    <div class="mb-3 row justify-content-center">
+        <input name="Title" class="form-control w-25" placeholder="Title" required />
     </div>
 
-    <div class="mb-3 w-25">
-        <label class="form-label">Category</label>
-        <select name="Category" class="form-select">
+    <div class="mb-3 row justify-content-center">
+        <select name="Category" class="form-select w-25">
             <option value="Equipment">Equipment</option>
             <option value="Furniture">Furniture</option>
             <option value="Book">Book</option>
@@ -20,64 +20,61 @@
         </select>
     </div>
     
-    <div class="mb-3 w-25">
-        <label class="form-label">Custom Id</label>
-        <select id="customIdTemplate" class="form-select" name="CustomIdTemplateJson">
+    <div class="mb-3 row justify-content-center">
+        <select id="customIdTemplate" class="form-select w-25" name="CustomIdTemplateJson">
             <option value='[{"Type":0,"Parameter":"INV-"}]'>Fixed prefix "INV-"</option>
             <option value='[{"Type":1}]'>Random 20-bit number</option>
             <option value='[{"Type":2}]'>Random 32-bit number</option>
             <option value='[{"Type":3}]'>Random 6-digit number</option>
             <option value='[{"Type":4}]'>Sequence</option>
         </select>
-        <div class="form-text">
+        <div class="form-text row justify-content-center" style="margin-right:40px">
             Choose how IDs for items will be generated.
         </div>
     </div>
 
-    @for(int i = 0; i < Model.Tags.Count; i++)
-    {
-        <div class="form-group">
-            <label asp-for="Tags[i].Text" class="form-label">Tag</label>
-            <input asp-for="Tags[i].Text" class="form-control"/>
-        </div>
-    }
-
-    @for(int i = 0; i < Model.Fields.Count; i++)
-    {
-        <div class="form-group">
-            <label asp-for="Fields[i].Title" class="form-label">Field title</label>
-            <input asp-for="Fields[i].Title" class="form-control" required />
-        </div>
-        <div class="form-group">
-            <label asp-for="Fields[i].Description" class="form-label">Field Description</label>
-            <input asp-for="Fields[i].Description" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Fields[i].Order" class="form-label">Field Order</label>
-            <input asp-for="Fields[i].Order" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label asp-for="Fields[i].FieldType" class="form-label">Field type</label>
-            <select asp-for="Fields[i].FieldType" asp-items="Html.GetEnumSelectList<InventoryFieldType>()" class="form-control">
-                <option value="">Please select</option>
-            </select>
-            <span asp-validation-for="Fields[i].FieldType" class="text-danger"></span>
-        </div>
-        <div>
-            <label asp-for="Fields[i].ShowInTable" class="form-label">Show In Table</label>
-            <input type="checkbox" asp-for="Fields[i].ShowInTable" />
-        </div>
-    }
-
-    <div class="mb-3 w-50">
-        <label class="form-label">Description</label>
-        <textarea name="Description" class="form-control"></textarea>
+    <div class="mb-3">
+        @for (int i = 0; i < Model.Tags.Count; i++)
+        {
+            <div class="form-group row justify-content-center">
+                <input asp-for="Tags[i].Text" class="form-control w-25" placeholder="Tag"/>
+            </div>
+        }
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Public (allow authenticated users to add items)</label>
-        <input type="checkbox" name="IsPublic" />
+        @for (int i = 0; i < Model.Fields.Count; i++)
+        {
+            <div class="form-group mb-2 mt-4 row justify-content-center">
+                <input asp-for="Fields[i].Title" class="form-control w-25" required placeholder="Field title"/>
+            </div>
+            <div class="form-group mb-2 row justify-content-center">
+                <input asp-for="Fields[i].Description" class="form-control w-25" placeholder="Field Description" />
+            </div>
+            <div class="form-group mb-2 row justify-content-center">
+                <input asp-for="Fields[i].Order" class="form-control w-25" placeholder="Field Order" />
+            </div>
+            <div class="form-group mb-2 row justify-content-center">
+                <select asp-for="Fields[i].FieldType" asp-items="Html.GetEnumSelectList<InventoryFieldType>()" class="form-control w-25">
+                    <option value="">Please select</option>
+                </select>
+                <span asp-validation-for="Fields[i].FieldType" class="text-danger"></span>
+            </div>
+            <div style="margin-left:485px">
+                <label asp-for="Fields[i].ShowInTable" class="form-label">Show In Table</label>
+                <input type="checkbox" asp-for="Fields[i].ShowInTable" />
+            </div>
+        }
     </div>
 
-    <button class="btn btn-primary">Save</button>
+    <div class="mb-3 row justify-content-center">
+        <textarea name="Description" class="form-control w-25" placeholder="Description"></textarea>
+    </div>
+
+    <div class="mb-2" style="margin-left:485px">
+        <label asp-for="IsPublic" class="form-label">Public</label>
+        <input asp-for="IsPublic" type="checkbox" name="IsPublic"/>
+    </div>
+
+    <button class="btn btn-success" style="margin-left:590px; width:100px">Save</button>
 </form>

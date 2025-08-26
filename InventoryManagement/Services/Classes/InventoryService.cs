@@ -84,6 +84,7 @@ namespace InventoryManagement.Services.Classes
         public async Task<int> SearchAsync(string query)
         {
             var baseQuery = _context.Inventories.AsQueryable();
+            
             if (!string.IsNullOrWhiteSpace(query))
             {
                 baseQuery = baseQuery.Where(i => i.Title.Contains(query) || i.Description == null && i.Description.Contains(query));
@@ -94,7 +95,9 @@ namespace InventoryManagement.Services.Classes
             return total;
         }
 
-        public async Task SaveAsync(int id, string title, string description, string customIdTemplateJson, string rowVersionBase64)
+        public async Task SaveAsync(
+            int id, string title, 
+            string description, string rowVersionBase64)
         {
             byte[] rowVersion = null;
 
@@ -107,6 +110,19 @@ namespace InventoryManagement.Services.Classes
             {
                 i.Title = title;
                 i.Description = description;
+            }, rowVersion);
+        }
+
+        public async Task SaveAsync(int id, string customIdTemplateJson, string rowVersionBase64)
+        {
+            byte[] rowVersion = null;
+            if(!string.IsNullOrEmpty(rowVersionBase64))
+            {
+                rowVersion = Convert.FromBase64String(rowVersionBase64);
+            }    
+
+            await UpdateAsync(id, i =>
+            {
                 i.CustomIdTemplateJson = customIdTemplateJson;
             }, rowVersion);
         }
@@ -114,7 +130,9 @@ namespace InventoryManagement.Services.Classes
         public async Task PostAsync(Post post, int id)
         {
             _context.Posts.Add(post);
+            
             await _context.SaveChangesAsync();
+            
             await _notificationService.NotifyPostAsync(id, new { author = post.AuthorId, markdown = post.Markdown });
         }
 

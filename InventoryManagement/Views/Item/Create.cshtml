@@ -3,13 +3,13 @@
 @{
     ViewData["Title"] = "Create item";
 }
-<h2>Add item to @Model.Inventory.Title</h2>
+<h2 class="row justify-content-center mt-5">Add item to @Model.Inventory.Title</h2>
 
-<form method="post" asp-controller="Item" asp-action="CreatePost">
+<form method="post" asp-controller="Item" asp-action="CreatePost" style="margin-top:80px; margin-left:450px">
     <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
     @foreach (var f in Model.Inventory.Fields.OrderBy(f => f.Order))
     {
-        <div class="mb-3">
+        <div class="mb-3 w-50">
             <label class="form-label">@f.Title</label>
             @if (f.FieldType == InventoryFieldType.SingleLine)
             {
@@ -33,5 +33,5 @@
             }
         </div>
     }
-    <button class="btn btn-success">Add item</button>
+    <button class="btn btn-success" style="margin-left:150px">Add item</button>
 </form>
