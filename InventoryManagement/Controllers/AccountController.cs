@@ -46,7 +46,7 @@ namespace InventoryManagement.Controllers
 
             foreach(var error in response.Errors)
             {
-                ViewData["ErrorMessage"] = $"Username {user.UserName} is already taken";
+                ViewData["ErrorMessage"] = error.Description;
             }
 
             return View(viewModel);
@@ -68,7 +68,8 @@ namespace InventoryManagement.Controllers
                 return View(model);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password,
+                                                                  model.RememberMe, lockoutOnFailure: false);
 
             if (result.Succeeded)
             {

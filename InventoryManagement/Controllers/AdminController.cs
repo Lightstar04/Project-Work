@@ -1,31 +1,30 @@
-﻿using InventoryManagement.Stores;
+﻿using InventoryManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace InventoryManagement.Controllers
 {
     [Authorize(Roles ="Admin")]
     public class AdminController : Controller
     {
-        private readonly AdminStore _store;
+        private readonly IAdminService _service;
 
-        public AdminController(AdminStore store)
+        public AdminController(IAdminService service)
         {
-            _store = store;
+            _service = service;
         }
 
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Index()
         {
-            var usersList = await _store.Get();
+            var usersList = await _service.GetAsync();
 
             return View(usersList);
         }
 
         public async Task<IActionResult> Action(string[] selected, string operation)
         {
-            await _store.ButtonOperation(selected, operation);
+            await _service.ButtonOperationAsync(selected, operation);
 
             return RedirectToAction("Index");
         }

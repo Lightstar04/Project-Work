@@ -3,7 +3,6 @@ using InventoryManagement.Hubs;
 using InventoryManagement.Infrastucture.Data;
 using InventoryManagement.Services.Classes;
 using InventoryManagement.Services.Interfaces;
-using InventoryManagement.Stores;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,11 +46,16 @@ try
     builder.Services.AddScoped<IItemService, ItemService>();
     builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<HomeStore>();
-    builder.Services.AddScoped<AdminStore>();
+    builder.Services.AddScoped<IHomeService, HomeService>();
+    builder.Services.AddScoped<IAdminService, AdminService>();
 
     builder.Services.AddTransient<CustomIdService>();
+    builder.Services.AddTransient<InventoryService>();
+    builder.Services.AddTransient<ItemService>();
+    builder.Services.AddTransient<NotificationService>();
     builder.Services.AddTransient<UserService>();
+    builder.Services.AddTransient<HomeService>();
+    builder.Services.AddTransient<AdminService>();
 
     var app = builder.Build();
 

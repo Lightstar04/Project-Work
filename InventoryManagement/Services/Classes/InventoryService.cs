@@ -23,6 +23,9 @@ namespace InventoryManagement.Services.Classes
                 .Include(i => i.Fields)
                 .FirstOrDefaultAsync(i => i.Id == id);
 
+            if (inventory == null)
+                return null;
+
             var items = await _context.Items
                 .Include(f => f.FieldValues)
                 .Where(i => i.InventoryId == id)

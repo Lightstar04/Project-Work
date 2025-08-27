@@ -24,9 +24,11 @@ namespace InventoryManagement.Controllers
         [Authorize]
         public async Task<IActionResult> Create(int inventoryId)
         {
-            var inventory = _context.Inventories.Include(i => i.Fields).FirstOrDefault(i => i.Id ==  inventoryId);
+            var inventory = await _context.Inventories
+                .Include(i => i.Fields)
+                .FirstOrDefaultAsync(i => i.Id ==  inventoryId);
 
-            if(inventory != null && inventory.IsPublic == true || User.IsInRole("Admin") || inventory.OwnerId == User.FindFirst(ClaimTypes.NameIdentifier)!.Value)
+            if(ValidateInventory(inventory))
             {
                 var viewModel = new CreateItemViewModel{ Inventory = inventory };
                 return View(viewModel);
@@ -68,11 +70,29 @@ namespace InventoryManagement.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> Action(string[] selected, string operation)
+        public async Task<IActionResult> Action(string[] selected, string operation, int inventoryId)
         {
-            await _itemService.ButtonOperationAsync(selected, operation);
+            var inventory = await _context.Inventories.FirstOrDefaultAsync(i => i.Id == inventoryId);
 
-            return RedirectToAction("Details", "Inventory");
+            if (ValidateInventory(inventory))
+            {
+                await _itemService.ButtonOperationAsync(selected, operation);
+                
+                return RedirectToAction("Details", "Inventory", new {id = inventoryId});
+            }
+
+            return NotFound();
+        }
+
+        private bool ValidateInventory(Inventory inventory)
+        {
+            if (inventory != null && inventory.IsPublic == true
+                || User.IsInRole("Admin") || inventory.OwnerId == User.FindFirst(ClaimTypes.NameIdentifier)!.Value)
+            {
+                return true;
+            }
+
+            return false;
         }
 
     }

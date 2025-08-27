@@ -22,6 +22,11 @@ namespace InventoryManagement.Controllers
         {
             var result = await _service.GetByIdAsync(id);
 
+            if(result == null || result.Inventory == null)
+            {
+                return NotFound();
+            }
+
             var chartData = await _service.GetMostUsedFieldDailyAsync(id, DateTime.Now);
             ViewBag.dataSource = chartData;
 

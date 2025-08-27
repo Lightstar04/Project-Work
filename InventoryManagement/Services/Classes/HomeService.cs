@@ -1,21 +1,20 @@
-﻿
-using InventoryManagement.Infrastucture.Data;
+﻿using InventoryManagement.Infrastucture.Data;
+using InventoryManagement.Services.Interfaces;
 using InventoryManagement.ViewModels;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
-namespace InventoryManagement.Stores
+namespace InventoryManagement.Services.Classes
 {
-    public class HomeStore
+    public class HomeService : IHomeService
     {
         private readonly InventoryManagementDbContext _context;
 
-        public HomeStore(InventoryManagementDbContext context)
+        public HomeService(InventoryManagementDbContext context)
         {
             _context = context;
         }
 
-        public async Task<HomeViewModel> Get(string query)
+        public async Task<HomeViewModel> GetAsync(string query)
         {
             var inventories = _context.Inventories
                 .Include(i => i.Owner)

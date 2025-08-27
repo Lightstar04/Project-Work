@@ -2,7 +2,6 @@
 using InventoryManagement.Infrastucture.Data;
 using InventoryManagement.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace InventoryManagement.Services.Classes
 {
@@ -77,7 +76,7 @@ namespace InventoryManagement.Services.Classes
 
             if(entity != null)
             {
-                _context.Remove(entity);
+                _context.Items.Remove(entity);
                 await _context.SaveChangesAsync();
             }
         }

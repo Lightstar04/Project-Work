@@ -4,7 +4,7 @@ namespace InventoryManagement.ViewModels
 {
     public class InventoryDetailsViewModel
     {
-        public Inventory Inventory { get; set; } = null;
+        public Inventory Inventory { get; set; } = new();
         public List<Item> Items { get; set; } = new();
         public List<Post> Posts { get; set; } = new();
     }
