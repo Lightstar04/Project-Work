@@ -4,14 +4,14 @@ namespace InventoryManagement.Hubs
 {
     public class InventoryHub : Hub
     {
-        public void JoinInventory(string inventoryId)
+        public async Task JoinInventory(string inventoryId)
         {
-            Groups.AddToGroupAsync(Context.ConnectionId, $"inventory - {inventoryId}");
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"inventory - {inventoryId}");
         }
 
-        public void LeaveInventory(string inventoryId)
+        public async Task LeaveInventory(string inventoryId)
         {
-            Groups.RemoveFromGroupAsync(Context.ConnectionId, $"inventory - {inventoryId}");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"inventory - {inventoryId}");
         }
     }
 }
