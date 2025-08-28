@@ -90,5 +90,16 @@ namespace InventoryManagement.Services.Classes
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> ValidateUserAsync(string userId)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+            var userRole = await _userManager.IsInRoleAsync(user, "Admin");
+
+            if (user.IsBlocked || !userRole)
+                return false;
+            else
+                return true;
+        }
     }
 }

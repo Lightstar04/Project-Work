@@ -7,5 +7,7 @@ namespace InventoryManagement.Services.Interfaces
         Task<List<AppUser>> GetAsync();
 
         Task ButtonOperationAsync(string[] selected, string operation);
+
+        Task<bool> ValidateUserAsync(string userId);
     }
 }
