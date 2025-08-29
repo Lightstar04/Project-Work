@@ -1,8 +1,8 @@
 ﻿using InventoryManagement.Domain.Entities;
 using InventoryManagement.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System.Text.Json;
 
 namespace InventoryManagement.Infrastucture.Data
