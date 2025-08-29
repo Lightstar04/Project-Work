@@ -1,8 +1,8 @@
 ﻿using InventoryManagement.Domain.Entities;
 
-namespace InventoryManagement.ViewModels
+namespace InventoryManagement.ViewModels.ItemViewModels
 {
-    public class CreateItemViewModel
+    public class CreateViewModel
     {
         public Inventory Inventory { get; set; } = null;
     }

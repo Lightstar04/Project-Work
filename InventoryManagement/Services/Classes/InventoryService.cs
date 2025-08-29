@@ -1,7 +1,7 @@
 ﻿using InventoryManagement.Domain.Entities;
 using InventoryManagement.Infrastucture.Data;
 using InventoryManagement.Services.Interfaces;
-using InventoryManagement.ViewModels;
+using InventoryManagement.ViewModels.InventoryViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventoryManagement.Services.Classes
@@ -17,7 +17,7 @@ namespace InventoryManagement.Services.Classes
             _notificationService = notificationService;
         }
 
-        public async Task<InventoryDetailsViewModel> GetByIdAsync(int id)
+        public async Task<DetailsViewModel> GetByIdAsync(int id)
         {
             var inventory = await _context.Inventories
                 .Include(i => i.Fields)
@@ -35,7 +35,7 @@ namespace InventoryManagement.Services.Classes
                 .Where(p => p.InventoryId == id)
                 .ToListAsync();
             
-            var viewModel = new InventoryDetailsViewModel
+            var viewModel = new DetailsViewModel
             { 
                 Inventory = inventory,
                 Items = items, 

@@ -1,12 +1,11 @@
 ﻿using InventoryManagement.Domain.Entities;
-using InventoryManagement.ViewModels;
-using System.Net;
+using InventoryManagement.ViewModels.InventoryViewModels;
 
 namespace InventoryManagement.Services.Interfaces
 {
     public interface IInventoryService
     {        
-        Task<InventoryDetailsViewModel> GetByIdAsync(int id);
+        Task<DetailsViewModel> GetByIdAsync(int id);
         
         Task<Inventory> CreateAsync(Inventory inventory);
         

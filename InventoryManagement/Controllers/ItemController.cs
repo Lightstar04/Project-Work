@@ -1,10 +1,11 @@
 ﻿using InventoryManagement.Domain.Entities;
 using InventoryManagement.Infrastucture.Data;
 using InventoryManagement.Services.Interfaces;
-using InventoryManagement.ViewModels;
+using InventoryManagement.ViewModels.ItemViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Graph.Models;
 using System.Security.Claims;
 
 namespace InventoryManagement.Controllers
@@ -24,13 +25,11 @@ namespace InventoryManagement.Controllers
         [Authorize]
         public async Task<IActionResult> Create(int inventoryId)
         {
-            var inventory = await _context.Inventories
-                .Include(i => i.Fields)
-                .FirstOrDefaultAsync(i => i.Id ==  inventoryId);
+            var inventory = await GetInventoryByIdAsync(inventoryId);
 
             if(ValidateInventory(inventory))
             {
-                var viewModel = new CreateItemViewModel{ Inventory = inventory };
+                var viewModel = new CreateViewModel{ Inventory = inventory };
                 return View(viewModel);
             }
 
@@ -43,30 +42,40 @@ namespace InventoryManagement.Controllers
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
-            var inventory = await _context.Inventories
-                .Include(i => i.Fields)
-                .FirstOrDefaultAsync(i => i.Id == inventoryId);
+            await _itemService.UpsertAsync(inventoryId, null, Request.Form, userId);
 
-            if (inventory != null)
+            return RedirectToAction("Details", "Inventory", new { id = inventoryId });
+
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Edit(int inventoryId, int itemId)
+        {
+            var inventory = await GetInventoryByIdAsync(inventoryId);
+            var item = await _itemService.GetAsync(inventoryId, itemId);
+
+            if (ValidateInventory(inventory) && item != null)
             {
-                var values = new List<ItemFieldValue>();
-
-                foreach(var field in inventory.Fields)
+                var viewModel = new UpdateViewModel 
                 {
-                    var key = $"field_{field.Id}";
-                    
-                    var value = Request.Form[key];
-
-                    values.Add(new ItemFieldValue { InventoryFieldId = field.Id, Value = value });
-                }
-
-                var item = await _itemService.CreateAsync(inventoryId, values, userId);
+                    Inventory = inventory,
+                    Item = item
+                };
                 
-                return RedirectToAction("Details", "Inventory", new { id = inventoryId });
+                return View(viewModel);
             }
 
             return NotFound();
+        }
 
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> EditItem(int inventoryId, int itemId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            await _itemService.UpsertAsync(inventoryId, itemId, Request.Form, userId);
+
+            return RedirectToAction("Details", "Inventory", new { id = inventoryId });
         }
 
         [Authorize]
@@ -93,6 +102,29 @@ namespace InventoryManagement.Controllers
             }
 
             return false;
+        }
+
+        private async Task<Inventory> GetInventoryByIdAsync(int inventoryId)
+        {
+            var entity = await _context.Inventories
+                .Include(f => f.Fields)
+                .FirstOrDefaultAsync(f => f.Id == inventoryId);
+            
+            return entity;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult EditSelected(string[] selected, int inventoryId)
+        {
+            if(selected.Length != 1)
+            {
+                TempData["Error"] = "Please, select exactly one item to edit";
+                return RedirectToAction("Details", "Inventory", new { id = inventoryId });
+            }
+
+            var itemId = int.Parse(selected[0]);
+            return RedirectToAction("Edit", "Item", new {inventoryId, itemId});
         }
 
     }

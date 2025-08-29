@@ -1,0 +1,44 @@
+﻿@using InventoryManagement.Domain.Enums
+@model InventoryManagement.ViewModels.ItemViewModels.UpdateViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1 class="row justify-content-center mt-5">Edit</h1>
+
+<form method="post" asp-controller="Item" asp-action="EditItem" style="margin-top:40px; margin-left:450px">
+    <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
+    <input type="hidden" name="itemId" value="@Model.Item.Id" />
+    
+    @foreach(var f in Model.Inventory.Fields.OrderBy(f => f.Order))
+    {
+        var existingValue = Model.Item.FieldValues.FirstOrDefault(v => v.InventoryFieldId == f.Id)?.Value ?? "";
+
+        <div class="mb-3 w-50">
+            <label class="form-label">@f.Title</label>
+            @if (f.FieldType == InventoryFieldType.SingleLine)
+            {
+                <input class="form-control" name="field_@f.Id" value="@existingValue" />
+            }
+            else if (f.FieldType == InventoryFieldType.MultiLine)
+            {
+                <textarea class="form-control" name="field_@f.Id">@existingValue</textarea>
+            }
+            else if (f.FieldType == InventoryFieldType.Number)
+            {
+                <input type="number" class="form-control" name="field_@f.Id" value="@existingValue" />
+            }
+            else if (f.FieldType == InventoryFieldType.DocLink)
+            {
+                <input type="checkbox" class="form-check-input" name="field_@f.Id" @(existingValue == "true" ? "checked" : "") />
+            }
+            else
+            {
+                <input class="form-control" name="field_@f.Id" value="@existingValue" />
+            }
+        </div>
+    }
+    <button class="btn btn-success w-25" style="margin-left:110px">Save</button>
+</form>
+

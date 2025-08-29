@@ -1,12 +1,13 @@
 ﻿@using System.Net
 @using System.Security.Claims
 @using InventoryManagement.Services.Classes
-@model InventoryManagement.ViewModels.InventoryDetailsViewModel
+@model InventoryManagement.ViewModels.InventoryViewModels.DetailsViewModel
 @inject CustomIdService CustomIdService
 
 @{
     ViewData["Title"] = Model.Inventory.Title;
 }
+
 <div class="d-flex justify-content-between align-items-start">
     <div>
         <h2>@Model.Inventory.Title</h2>
@@ -42,6 +43,12 @@
 
 <div class="tab-content mt-3">
     <div class="tab-pane fade show active" id="items" role="tabpanel">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["Error"]
+            </div>
+        }
         <div class="d-flex justify-content-between mb-2">
             <div>
                 <a class="btn btn-success" asp-controller="Item" asp-action="Create" asp-route-inventoryId="@Model.Inventory.Id">Add item</a>
@@ -51,11 +58,11 @@
             </div>
         </div>
 
-        <form method="post" asp-action="Action" asp-controller="Item">
+        <form method="post">
             <input type="hidden" name="inventoryId" value="@Model.Inventory.Id" />
             <div class="toolbar column-gap-1 mt-3 mb-3 d-flex justify-content-end">
-                <button name="operation" value="edit" title="Edit" class="btn btn-outline-warning">✏️</button>
-                <button name="operation" value="delete" title="Delete" class="btn btn-outline-danger">🗑</button>
+                <button type="submit" formaction="@Url.Action("EditSelected", "Item")" title="Edit" class="btn btn-outline-warning">✏️</button>
+                <button type="submit" formaction="@Url.Action("Action", "Item")" name="operation" value="delete" title="Delete" class="btn btn-outline-danger">🗑</button>
             </div>
 
             <table class="table" id="itemsTable">
@@ -209,8 +216,8 @@
     </script>
 
     <script>
-        function toggle(this){
-            checkboxes = document.getElementByName('selected');
+        function toggle(source){
+            checkboxes = document.getElementsByName('selected');
             for(var i = 0; i < checkboxes.length; i++){
                 checkboxes[i].checked = source.checked;
             }

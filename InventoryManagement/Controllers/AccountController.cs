@@ -1,5 +1,5 @@
 ﻿using InventoryManagement.Domain.Entities;
-using InventoryManagement.ViewModels;
+using InventoryManagement.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 

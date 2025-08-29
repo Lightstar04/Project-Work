@@ -1,4 +1,4 @@
-﻿namespace InventoryManagement.ViewModels
+﻿namespace InventoryManagement.ViewModels.AccountViewModels
 {
     public class LoginViewModel
     {

@@ -23,7 +23,10 @@ namespace InventoryManagement.Services.Classes
 
             if (!string.IsNullOrWhiteSpace(query))
             {
-                inventories = _context.Inventories.Where(i => i.Title.Contains(query) || (i.Description != null && i.Description.Contains(query)));
+                inventories = _context.Inventories
+                    .Where(i => i.Title.Contains(query) 
+                            || (i.Description != null && i.Description.Contains(query)) 
+                            || i.Category.Contains(query));
             }
 
             var model = new HomeViewModel
