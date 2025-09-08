@@ -5,7 +5,6 @@ using InventoryManagement.ViewModels.ItemViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Graph.Models;
 using System.Security.Claims;
 
 namespace InventoryManagement.Controllers
@@ -33,7 +32,8 @@ namespace InventoryManagement.Controllers
                 return View(viewModel);
             }
 
-            return NotFound();
+            TempData["Error"] = "You cannot add item to this inventory";
+            return RedirectToAction("Details", "Inventory", new {id = inventoryId});
         }
 
         [HttpPost]
@@ -90,7 +90,8 @@ namespace InventoryManagement.Controllers
                 return RedirectToAction("Details", "Inventory", new {id = inventoryId});
             }
 
-            return NotFound();
+            TempData["Error"] = "Please, select item to delete first";
+            return RedirectToAction("Details", "Inventory", new {id = inventoryId});
         }
 
         private bool ValidateInventory(Inventory inventory)
