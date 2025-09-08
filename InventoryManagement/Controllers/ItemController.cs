@@ -65,7 +65,8 @@ namespace InventoryManagement.Controllers
                 return View(viewModel);
             }
 
-            return NotFound();
+            TempData["Error"] = "You have not access to do this action!";
+            return RedirectToAction("Details", "Inventory", new {id = inventoryId});
         }
 
         [HttpPost]
@@ -73,6 +74,7 @@ namespace InventoryManagement.Controllers
         public async Task<IActionResult> EditItem(int inventoryId, int itemId)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            
             await _itemService.UpsertAsync(inventoryId, itemId, Request.Form, userId);
 
             return RedirectToAction("Details", "Inventory", new { id = inventoryId });
