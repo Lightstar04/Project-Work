@@ -1,6 +1,6 @@
 ﻿window.selectedRows = new Set();
 
-// Theme management
+
 function setTheme(name) {
     document.body.classList.toggle('dark-theme', name === 'dark')
     localStorage.setItem('theme', name);
@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setTheme(theme);
 });
 
-// Simple client-side filter for items table
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const f = document.getElementById('itemsFilter');
     if (!f) return;
